@@ -144,22 +144,69 @@ AI로 다시 만들 필요 없이 `assets/icon-only.png`를 리사이즈하면 �
 
 > ✅ 현재 `assets/og-image.png`에 생성된 배경이 들어 있고 `public/og-image.png`는 그걸로 합성된 상태입니다. 배경을 바꾸면 `npm run og`만 다시 실행하세요. 제목 문구는 `scripts/make-og.mjs`에서 수정합니다.
 
-**프롬프트 (배경 일러스트, EN)**
-```
-Wide horizontal banner illustration, 1200x630. Minimal flat illustration of the
-Fukuoka city skyline at golden hour: Fukuoka Tower on the right, calm Hakata bay
-waves at the bottom, a small airplane leaving a dotted trail in the sky, a steaming
-ramen bowl and a yatai food stall lantern small in the foreground on the right.
-Leave the LEFT 55% of the image as clean empty warm ivory #FAF7F2 space for a title.
-Palette: coral #F2665A, deep navy #1F3A5F, sand #F3E9DC, ivory #FAF7F2.
-+ 공통 꼬리말
-```
-**설명 (KO)**: 오른쪽에 후쿠오카 타워·바다·비행기·라멘을 배치하고, 왼쪽 절반은 비워 두어 제목을 얹을 공간 확보.
+### OG 컬러 (앱 홈 상단 카드와 동일 톤)
 
-**합성되는 텍스트 (왼쪽 여백에 — `npm run og`가 자동 처리)**
-- 제목: `지연이와 아이들의 후쿠오카 여행` (굵게, 네이비 `#1F3A5F`, Pretendard Bold 64px 전후)
-- 부제: `2027. 1. 22 – 1. 24 · 수빈 · 지연 · 광의` (코랄 `#F2665A`, 32px)
-- 안전 여백: 상하좌우 60px
+| 이름 | HEX | 쓰임 |
+|---|---|---|
+| 미드나잇 네이비 | `#232F4B` → `#2B3F63` | 배경 (왼쪽 위 → 오른쪽 아래 은은한 그라데이션) |
+| 코랄 | `#EC7A6E` | 오른쪽 아래 큰 원 (포인트) |
+| 소프트 슬레이트 | `#414D6A` | 오른쪽 위 작은 반투명 원 |
+| 크림 화이트 | `#FFF8F1` | 제목 글씨 |
+
+> 레이아웃은 홈 카드와 같은 구도입니다: 네이비 바탕 + 오른쪽 아래에서 잘려 들어오는 큰 코랄 원 + 오른쪽 위 작은 원. 글씨는 **`지연이와 아이들의 후쿠오카 여행` 한 줄(또는 두 줄)만** 넣습니다.
+
+### 방법 A (권장) — 배경만 AI로, 글씨는 귀여운 폰트로 합성
+
+AI는 한글을 자주 깨뜨리므로 배경만 생성하고 글씨는 폰트로 얹는 방식이 가장 깔끔합니다.
+
+**프롬프트 (배경, EN)**
+```
+Minimal flat graphic banner, wide 1200x630 (1.91:1). Solid deep midnight navy
+background with a very soft diagonal gradient from #232F4B (top-left) to #2B3F63
+(bottom-right). One large perfect coral #EC7A6E circle entering from the
+bottom-right corner, cropped by the frame, covering about 30% of the width.
+One small muted slate circle #414D6A partially cropped at the top edge, right of
+center. Optional: three tiny cream #FFF8F1 dots floating above the coral circle
+like steam, and a few very faint thin wave lines in slightly lighter navy at the
+bottom-left. Large clean empty area on the left and center for a title.
+Flat vector shapes only, perfectly smooth edges, no texture, no noise, no
+illustration details, no buildings, no people, no text, no letters, no logo,
+no watermark.
+```
+**설명 (KO)**: 홈 카드처럼 네이비 바탕에 오른쪽 아래 큰 코랄 원, 위쪽 작은 원만 있는 아주 단순한 배경. (선택) 코랄 원 위에 김처럼 떠오르는 작은 점 3개(=세 사람).
+
+**글씨 합성 가이드**
+| 항목 | 값 |
+|---|---|
+| 문구 | `지연이와 아이들의` / `후쿠오카 여행` (두 줄) — 다른 문구 없음 |
+| 추천 폰트 (무료, 귀여운 둥근체) | **Jua(주아)** · **Cafe24 써라운드** · **Gaegu(개구) Bold** · 배달의민족 주아 |
+| 크기 | 1줄째 76px / 2줄째 96px 전후 (2줄째를 더 크게) |
+| 색 | 크림 화이트 `#FFF8F1`, `여행` 두 글자만 코랄 `#EC7A6E`로 포인트(선택) |
+| 위치 | 왼쪽 정렬, 왼쪽 여백 88px, 세로 가운데 |
+| 효과 | 없음 (그림자·외곽선 X) |
+
+### 방법 B — 글씨까지 AI로 한 번에 (한글 지원 좋은 도구: ChatGPT 이미지 / Ideogram)
+
+**프롬프트 (EN + 한글 문구)**
+```
+Minimal flat graphic banner, wide 1200x630 (1.91:1). Solid deep midnight navy
+background with a very soft diagonal gradient from #232F4B to #2B3F63. One large
+coral #EC7A6E circle entering from the bottom-right corner, cropped by the frame.
+One small muted slate circle #414D6A partially cropped at the top edge, right of
+center. Three tiny cream dots floating above the coral circle like steam.
+On the left side, left-aligned and vertically centered, the Korean title written
+in two lines in a cute, chunky, rounded handwritten Korean font, cream white
+#FFF8F1, with generous letter spacing:
+line 1: "지연이와 아이들의"
+line 2: "후쿠오카 여행"   (line 2 larger)
+The Korean text must be spelled exactly as given. No other text, no English,
+no subtitle, no logo, no watermark. Flat vector, smooth edges, no texture.
+```
+> 생성 후 한글 철자가 정확한지(특히 `아이들의`, `후쿠오카`) 꼭 확인하세요. 하나라도 틀리면 방법 A로.
+
+**결과 파일 넣는 곳**
+- 방법 A: 배경을 `assets/og-image.png`에 저장 → 글씨 합성은 `scripts/make-og.mjs`(`npm run og`)로 처리 (현재 스크립트는 날짜·멤버 부제도 넣으므로 제목만 남기도록 수정 필요)
+- 방법 B: 완성본을 1200×630으로 맞춰 `public/og-image.png`에 바로 덮어쓰기 (`npm run og` 실행하지 않기)
 
 > 카카오톡은 캐시가 강해서, 이미지를 바꾼 뒤 [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 URL 캐시를 초기화해야 새 이미지가 보입니다.
 
