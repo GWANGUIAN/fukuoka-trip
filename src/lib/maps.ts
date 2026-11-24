@@ -1,6 +1,7 @@
 import type { Place } from '../data/types';
 
 function query(p: Place) {
+  if (p.address) return encodeURIComponent(p.address);
   return encodeURIComponent(p.nameJa ? `${p.nameJa} 福岡` : `${p.name} 후쿠오카`);
 }
 

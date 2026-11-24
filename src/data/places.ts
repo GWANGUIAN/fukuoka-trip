@@ -136,6 +136,7 @@ export const places: Place[] = [
   {
     id: 'oden-bar',
     name: '사케토오덴토 츠키후타츠',
+    address: '福岡県福岡市博多区住吉5-18-10',
     category: 'bar',
     area: 'hakata',
     lat: 33.5843,
@@ -241,6 +242,7 @@ export const places: Place[] = [
     area: 'daimyo',
     lat: 33.5873,
     lng: 130.3918,
+    address: '福岡県福岡市中央区大名2-12-18',
     memo: '다이묘 2-12-18 · 예약 불필요 · 1인 1음료',
     blogs: [{ title: '라떼아트 마니아 후쿠오카 소개 (arne)', url: 'https://arne.media/en/gourmet/540720/' }],
   },

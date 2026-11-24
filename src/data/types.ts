@@ -21,6 +21,8 @@ export interface Place {
   name: string;
   /** 일본어 상호 — 구글맵 검색 정확도용 */
   nameJa?: string;
+  /** 일본어 주소 — 있으면 길찾기 검색에 최우선 사용 */
+  address?: string;
   category: Category;
   area: Area;
   /** 대략 좌표 (지도 핀용). 정확한 위치는 구글맵 링크 기준 */
