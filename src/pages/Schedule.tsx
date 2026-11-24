@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { ChevronDown, Route } from 'lucide-react';
 import { trip } from '../data/trip';
 import { placeMap } from '../data/places';
-import type { ScheduleItem } from '../data/types';
+import type { Place, ScheduleItem } from '../data/types';
+import { LegRow } from '../components/LegRow';
 import { formatDate, timeToMinutes, tripPhase, weekday } from '../lib/date';
 import { routeUrl } from '../lib/maps';
 import { DAY_COLOR } from '../lib/labels';
@@ -21,7 +22,7 @@ function nowItemId(items: ScheduleItem[]): string | null {
   return found;
 }
 
-function TimelineItem({ item, isNow, color }: { item: ScheduleItem; isNow: boolean; color: string }) {
+function TimelineItem({ item, isNow, color, prev }: { item: ScheduleItem; isNow: boolean; color: string; prev?: Place }) {
   const [altOpen, setAltOpen] = useState(false);
   const mains = item.places.map((id) => placeMap[id]).filter(Boolean);
   const alts = (item.alternatives ?? []).map((id) => placeMap[id]).filter(Boolean);
@@ -38,8 +39,21 @@ function TimelineItem({ item, isNow, color }: { item: ScheduleItem; isNow: boole
             <StatusBadge status={item.status} />
           </div>
           {item.note && <div className="tl-note">{item.note}</div>}
+          {prev && mains[0] && (
+            <div className="leg-wrap">
+              <span className="faint xs">{prev.name}에서</span>
+              <LegRow from={prev} to={mains[0]} />
+            </div>
+          )}
           {mains.map((p, i) => (
-            <PlaceRow key={p.id} place={p} index={mains.length > 1 ? i + 1 : undefined} />
+            <div key={p.id}>
+              {i > 0 && (
+                <div className="leg-wrap inner">
+                  <LegRow from={mains[i - 1]} to={p} />
+                </div>
+              )}
+              <PlaceRow place={p} index={mains.length > 1 ? i + 1 : undefined} />
+            </div>
           ))}
           {route && (
             <div style={{ marginTop: 10 }}>
@@ -118,9 +132,12 @@ export function Schedule() {
       </div>
 
       <div className="timeline">
-        {current.items.map((it) => (
-          <TimelineItem key={it.id} item={it} isNow={it.id === nowId} color={color} />
-        ))}
+        {current.items.map((it, idx) => {
+          // 직전 일정의 마지막 장소 → 이번 일정 첫 장소 이동 정보
+          const prevItem = current.items.slice(0, idx).reverse().find((p) => p.places.length > 0);
+          const prev = prevItem ? placeMap[prevItem.places[prevItem.places.length - 1]] : undefined;
+          return <TimelineItem key={it.id} item={it} isNow={it.id === nowId} color={color} prev={prev} />;
+        })}
       </div>
 
       {current.excluded && current.excluded.length > 0 && (

@@ -14,6 +14,11 @@ export function directionsUrl(p: Place, mode: 'transit' | 'walking' = 'transit')
   return `https://www.google.com/maps/dir/?api=1&destination=${query(p)}&travelmode=${mode}`;
 }
 
+/** A → B 길찾기 */
+export function legUrl(a: Place, b: Place, mode: 'transit' | 'walking'): string {
+  return `https://www.google.com/maps/dir/?api=1&origin=${query(a)}&destination=${query(b)}&travelmode=${mode}`;
+}
+
 /** 여러 장소를 경유하는 동선 (최대 10곳) */
 export function routeUrl(ps: Place[], mode: 'transit' | 'walking' = 'walking'): string | null {
   if (ps.length < 2) return null;

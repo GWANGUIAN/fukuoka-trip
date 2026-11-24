@@ -55,7 +55,7 @@ export function Checklist() {
                 key={t.id}
                 id={key}
                 label={t.title}
-                sub={`${formatDate(d)}${time ? ` ${time}` : ''}`}
+                sub={`${formatDate(d)}${time ? ` ${time}` : ''}${t.note ? ` · ${t.note}` : ''}`}
                 checked={!!done[key]}
                 onToggle={toggle}
                 right={

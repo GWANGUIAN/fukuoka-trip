@@ -11,7 +11,7 @@ export const trip: Trip = {
   startDate: '2027-01-22',
   endDate: '2027-01-24',
   members: ['조수빈', '이지연', '안광의'],
-  updatedAt: '2026-11-25',
+  updatedAt: '2026-11-25 (2차)',
 
   flights: [
     {
@@ -56,7 +56,7 @@ export const trip: Trip = {
       day: 1,
       date: '2027-01-22',
       title: '하카타 집중',
-      theme: '도착 · 장어덮밥 · 캐널시티 · 모츠나베',
+      theme: '도착 · 장어덮밥 · 커비카페 · 모츠나베 · 오뎅바',
       items: [
         {
           id: 'd1-arrive',
@@ -84,10 +84,10 @@ export const trip: Trip = {
           id: 'd1-afternoon',
           time: '오후',
           title: '볼거리 · 쇼핑',
-          status: 'candidate',
-          places: ['kushida', 'canal-city'],
+          status: 'confirmed',
+          places: ['kushida', 'kirby-cafe', 'gap-canal'],
           alternatives: ['tochoji'],
-          note: '토초지는 선택',
+          note: '3인 합의 확정 · 캐널시티: 커비 카페 굿즈·테이크아웃 + GAP 사우스빌 1F(필수) · 토초지는 선택',
         },
         {
           id: 'd1-dinner',
@@ -96,15 +96,15 @@ export const trip: Trip = {
           status: 'booked',
           places: ['maedaya-honten'],
           alternatives: ['maedaya-hakata'],
-          note: '총본점 17:00 / 하카타점 19:30 둘 다 예약 상태 → 1곳 확정 후 나머지는 전날까지 전화 취소',
+          note: '총본점 17:00 확정 · 하카타점(19:30) 예약은 수빈이 전날 전까지 전화 취소',
         },
         {
           id: 'd1-night',
           time: '밤',
-          title: '장보기 → 하카타 오뎅바',
+          title: '장보기 → 사케·오뎅바',
           status: 'confirmed',
           places: ['kitte-mart', 'hotel-apa', 'oden-bar'],
-          note: '3인 합의 확정 · KITTE B1F 마트(21:00 마감)에서 장보고 숙소에 짐 둔 뒤 오뎅바',
+          note: '3인 합의 확정 · KITTE B1F 마트(21:00 마감)에서 장보고 숙소에 짐 둔 뒤 츠키후타츠',
         },
       ],
       excluded: ['lalaport'],
@@ -212,13 +212,12 @@ export const trip: Trip = {
     { id: 't1', date: '2026-12-01', title: '히키니쿠 토 코메 우선 티켓 오픈 — 구매 여부 결정', url: 'https://www.tablecheck.com/shops/hikinikutocome-imaizumi/reserve' },
     { id: 't2', date: '2026-12-19', title: '니쿠이치 야쿠인점 예약 오픈', url: 'https://tablecheck.com/ko/nikuichi-yakuin/reserve' },
     { id: 't3', date: '2027-01-15T00:00', title: '히키니쿠 토 코메 무료 일반 예약 오픈 (자정)', url: 'https://www.tablecheck.com/shops/hikinikutocome-imaizumi/reserve' },
-    { id: 't4', date: '2027-01-21', title: '마에다야 총본점/하카타점 중 미사용 1곳 전화 취소' },
+    { id: 't4', date: '2027-01-21', title: '마에다야 하카타점(19:30) 예약 전화 취소', note: '수빈 담당', url: 'https://maedayahakata.toreta.at/' },
   ],
 
   risks: [
     '야구라 카츠동(やぐら): 구글맵상 임시 휴업 표시 — 1월 중순 재개 여부 재확인',
     '숙소 최종 예약처 · 체크인/아웃 시간 미확정',
-    '1일차 저녁 마에다야 총본점(17:00) vs 하카타점(19:30) 최종 1곳 확정',
     '히키니쿠 토 코메 예약 방식(우선 티켓 vs 일반 예약) 결정',
     '케고 타카미 스시 전화 예약 · 야키니쿠 아카탄 타베로그 예약',
   ],

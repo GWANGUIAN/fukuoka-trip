@@ -1,5 +1,6 @@
-import { ExternalLink, Lightbulb, Link2, Smartphone } from 'lucide-react';
+import { ExternalLink, JapaneseYen, Lightbulb, Link2, Smartphone } from 'lucide-react';
 import { trip } from '../data/trip';
+import { YenCalculator } from '../components/YenCalculator';
 
 export function Info() {
   return (
@@ -8,6 +9,11 @@ export function Info() {
         <h1 className="page-title">여행 정보</h1>
         <p className="page-sub">알아두면 좋은 것들</p>
       </div>
+
+      <section>
+        <h2 className="section-title"><JapaneseYen size={16} /> 엔화 계산기 · 면세 체크</h2>
+        <YenCalculator />
+      </section>
 
       <section>
         <h2 className="section-title"><Lightbulb size={16} /> 팁</h2>
