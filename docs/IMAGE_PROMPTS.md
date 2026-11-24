@@ -138,11 +138,12 @@ AI로 다시 만들 필요 없이 `assets/icon-only.png`를 리사이즈하면 �
 
 | 항목 | 내용 |
 |---|---|
-| AI 원본 파일 | `assets/og-image.png` (글자 없는 배경, 가로형 약 1.91:1, 크기 무관) |
-| 최종 파일 | `public/og-image.png` 1200×630 — **`npm run og`가 원본을 리사이즈하고 한글 제목을 자동 합성** |
+| AI 배경 파일 (선택) | `assets/og-bg.png` (글자 없는 배경, 가로형 약 1.91:1, 크기 무관) |
+| 최종 파일 | `public/og-image.png` 1200×630 — **`npm run og`가 배경 위에 Jua 폰트로 제목만 합성** |
 | 용도 | 카카오톡/인스타/디스코드 등에 링크 공유 시 썸네일 |
 
-> ✅ 현재 `assets/og-image.png`에 생성된 배경이 들어 있고 `public/og-image.png`는 그걸로 합성된 상태입니다. 배경을 바꾸면 `npm run og`만 다시 실행하세요. 제목 문구는 `scripts/make-og.mjs`에서 수정합니다.
+> ✅ 현재는 `assets/og-bg.png`가 없어서, 스크립트가 아래 컬러대로 **벡터 기본 배경**(네이비 + 코랄 원 + 작은 원 + 점 3개)을 직접 그려 만든 상태입니다. AI 배경을 쓰고 싶으면 `assets/og-bg.png`로 저장 후 `npm run og`. 제목 문구·크기·색은 `scripts/make-og.mjs` 상단 `LINES`에서 수정합니다. 폰트는 `assets/fonts/Jua-Regular.ttf` (OFL 라이선스).
+> 이전 도시 일러스트 배경은 `assets/og-image.old-city.png`로 보관되어 있습니다.
 
 ### OG 컬러 (앱 홈 상단 카드와 동일 톤)
 
@@ -205,7 +206,7 @@ no subtitle, no logo, no watermark. Flat vector, smooth edges, no texture.
 > 생성 후 한글 철자가 정확한지(특히 `아이들의`, `후쿠오카`) 꼭 확인하세요. 하나라도 틀리면 방법 A로.
 
 **결과 파일 넣는 곳**
-- 방법 A: 배경을 `assets/og-image.png`에 저장 → 글씨 합성은 `scripts/make-og.mjs`(`npm run og`)로 처리 (현재 스크립트는 날짜·멤버 부제도 넣으므로 제목만 남기도록 수정 필요)
+- 방법 A: 배경을 `assets/og-bg.png`에 저장 → `npm run og` (Jua 폰트로 제목만 합성, `여행`은 코랄 포인트)
 - 방법 B: 완성본을 1200×630으로 맞춰 `public/og-image.png`에 바로 덮어쓰기 (`npm run og` 실행하지 않기)
 
 > 카카오톡은 캐시가 강해서, 이미지를 바꾼 뒤 [카카오 공유 디버거](https://developers.kakao.com/tool/debugger/sharing)에서 URL 캐시를 초기화해야 새 이미지가 보입니다.
@@ -215,7 +216,7 @@ no subtitle, no logo, no watermark. Flat vector, smooth edges, no texture.
 ## 5. 생성 후 적용 방법
 
 1. 위 파일들을 지정 위치에 같은 이름으로 저장 (덮어쓰기)
-   - 최소: `assets/icon-only.png`, `assets/icon-foreground.png`, `assets/icon-background.png`, `assets/splash.png`, `assets/splash-dark.png`, `assets/og-image.png`
+   - 최소: `assets/icon-only.png`, `assets/icon-foreground.png`, `assets/icon-background.png`, `assets/splash.png`, `assets/splash-dark.png`, (선택) `assets/og-bg.png`
 2. 웹 아이콘 일괄 리사이즈 (`assets/icon-only.png` → `public/*` 아이콘들) + OG 합성
    ```bash
    npm run icons:web
