@@ -1,0 +1,38 @@
+{
+  "name": "fukuoka-trip",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "icons:web": "node scripts/make-web-icons.mjs",
+    "og": "node scripts/make-og.mjs",
+    "icons:android": "capacitor-assets generate --android --assetPath assets",
+    "cap:sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.6.10",
+    "@capacitor/core": "^7.6.10",
+    "@vis.gl/react-google-maps": "^1.10.2",
+    "lucide-react": "^1.79.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.6"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^7.6.10",
+    "@types/google.maps": "^3.67.0",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.5",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.6",
+    "vite-plugin-pwa": "^2.0.0"
+  }
+}
