@@ -41,13 +41,23 @@ export const trip: Trip = {
 
   hotel: {
     placeId: 'hotel-apa',
-    status: 'pending',
-    statusNote: '후보 합의 · 최종 예약 전',
-    condition: '1/22(금) – 1/24(일) 2박 · 성인 3명 · 방 2개',
+    status: 'booked',
+    statusNote: '예약확정',
+    condition: '1/22(금) – 1/24(일) 2박 · 성인 3명 · 객실 2개',
+    details: [
+      { label: '체크인', value: '1/22(금) 16:00부터' },
+      { label: '체크아웃', value: '1/24(일) 10:00까지' },
+      { label: '객실', value: '[센트럴 빌딩] 스탠다드 2인 금연 룸온리 × 2' },
+      { label: '요청사항', value: '침대 2개 · 금연 · 고층 (당일 상황에 따라 미반영 가능)' },
+      { label: '예약처', value: '여기어때 (전액 결제 완료 · 대표 예약자 수빈)' },
+      { label: '주소', value: '1-14-1 Hakataeki-higashi, Hakata-ku, Fukuoka 812-0013' },
+    ],
     notes: [
-      '기존 아고다 예약 취소 후 다른 예약처·조건으로 재예약 예정',
-      '최종 예약처 및 체크인/체크아웃 시간 미확정',
+      '체크인 시 바우처(예약확인서) + 여권 제시 — 개인비용 예치용 신용카드 요구될 수 있음',
       '숙박세 1인 1박 200엔 (3인 2박 총 1,200엔) 현장 납부',
+      '무료 취소 2027-01-21 23:59까지 · 체크인 당일 취소/노쇼 100% 부과',
+      '센트럴 빌딩 1층: 자판기·전자레인지·제빙기·코인 세탁기·레스토랑·대욕탕 / 각 층 바지 프레서',
+      '객실 VOD(영화·일본 화제작 200편 이상) · 식사 미포함',
     ],
   },
 
@@ -69,8 +79,9 @@ export const trip: Trip = {
           id: 'd1-hotel',
           time: '09:30',
           title: '숙소 짐 보관',
-          status: 'pending',
+          status: 'confirmed',
           places: ['hotel-apa'],
+          note: '체크인은 16:00부터 — 프런트에 짐만 먼저 맡기기 (바우처·여권 준비)',
         },
         {
           id: 'd1-lunch',
@@ -168,6 +179,14 @@ export const trip: Trip = {
       theme: '우동 · 기념품 · 귀국',
       items: [
         {
+          id: 'd3-checkout-early',
+          time: '09:50',
+          title: '체크아웃 (10:00까지) · 짐 맡기기',
+          status: 'confirmed',
+          places: ['hotel-apa'],
+          note: '체크아웃 후 프런트에 짐 맡기고 아점·기념품 → 11:30에 찾기 (보관 가능 여부 체크인 때 확인)',
+        },
+        {
           id: 'd3-brunch',
           time: '10:00',
           title: '아점 — 우동',
@@ -185,7 +204,7 @@ export const trip: Trip = {
         {
           id: 'd3-checkout',
           time: '11:30',
-          title: '숙소 짐 찾아 공항 출발',
+          title: '맡긴 짐 찾아 공항 출발',
           status: 'confirmed',
           places: ['hotel-apa'],
         },
@@ -212,18 +231,19 @@ export const trip: Trip = {
     { id: 't1', date: '2026-12-01', title: '히키니쿠 토 코메 우선 티켓 오픈 — 구매 여부 결정', url: 'https://www.tablecheck.com/shops/hikinikutocome-imaizumi/reserve' },
     { id: 't2', date: '2026-12-19', title: '니쿠이치 야쿠인점 예약 오픈', url: 'https://tablecheck.com/ko/nikuichi-yakuin/reserve' },
     { id: 't3', date: '2027-01-15T00:00', title: '히키니쿠 토 코메 무료 일반 예약 오픈 (자정)', url: 'https://www.tablecheck.com/shops/hikinikutocome-imaizumi/reserve' },
+    { id: 't5', date: '2027-01-21T23:59', title: 'APA 호텔 무료 취소 마감', note: '이후 취소 시 100% 부과' },
     { id: 't4', date: '2027-01-21', title: '마에다야 하카타점(19:30) 예약 전화 취소', note: '수빈 담당', url: 'https://maedayahakata.toreta.at/' },
   ],
 
   risks: [
     '야구라 카츠동(やぐら): 구글맵상 임시 휴업 표시 — 1월 중순 재개 여부 재확인',
-    '숙소 최종 예약처 · 체크인/아웃 시간 미확정',
     '히키니쿠 토 코메 예약 방식(우선 티켓 vs 일반 예약) 결정',
     '케고 타카미 스시 전화 예약 · 야키니쿠 아카탄 타베로그 예약',
   ],
 
   packing: [
     '여권 (유효기간 확인)',
+    '숙소 바우처 (여기어때 예약확인서 캡처/인쇄)',
     'Visit Japan Web QR 등록',
     'eSIM / 포켓와이파이',
     '엔화 현금 · 해외결제 카드',

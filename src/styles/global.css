@@ -244,3 +244,9 @@ h1, h2, h3, p { margin: 0; }
 .calc-input .unit { font-weight: 700; color: var(--text-2); }
 .calc-result { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .rate-input { width: 64px; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 8px; padding: 3px 6px; font: inherit; font-size: 13px; text-align: right; }
+
+/* ───── 숙소 상세 ───── */
+.kv-grid { margin: 0; display: flex; flex-direction: column; gap: 6px; background: var(--surface-2); border-radius: 12px; padding: 10px 12px; }
+.kv-grid > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; font-size: 13px; }
+.kv-grid dt { color: var(--text-3); font-weight: 600; }
+.kv-grid dd { margin: 0; color: var(--text); font-weight: 500; }

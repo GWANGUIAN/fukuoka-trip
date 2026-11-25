@@ -89,6 +89,16 @@ export function Home() {
             </div>
             <StatusBadge status={trip.hotel.status} label={trip.hotel.statusNote} />
           </div>
+          {trip.hotel.details && (
+            <dl className="kv-grid">
+              {trip.hotel.details.map((d) => (
+                <div key={d.label}>
+                  <dt>{d.label}</dt>
+                  <dd>{d.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
           <div className="small muted">{hotel.memo}</div>
           <ul className="small muted" style={{ margin: 0, paddingLeft: 18 }}>
             {trip.hotel.notes.map((n) => <li key={n}>{n}</li>)}

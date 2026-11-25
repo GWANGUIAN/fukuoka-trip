@@ -95,6 +95,7 @@ export interface Trip {
     status: Status;
     statusNote: string;
     condition: string;
+    details?: { label: string; value: string }[];
     notes: string[];
   };
   days: Day[];
