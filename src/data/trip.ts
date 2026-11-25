@@ -11,7 +11,7 @@ export const trip: Trip = {
   startDate: '2027-01-22',
   endDate: '2027-01-24',
   members: ['조수빈', '이지연', '안광의'],
-  updatedAt: '2026-11-25 (2차)',
+  updatedAt: '2026-11-25 20:59',
 
   flights: [
     {
@@ -106,8 +106,7 @@ export const trip: Trip = {
           title: '저녁 — 모츠나베',
           status: 'booked',
           places: ['maedaya-honten'],
-          alternatives: ['maedaya-hakata'],
-          note: '총본점 17:00 확정 · 하카타점(19:30) 예약은 수빈이 전날 전까지 전화 취소',
+          note: '총본점 17:00 · 성인 3명 테이블석 (하카타점 19:30 예약은 취소 완료)',
         },
         {
           id: 'd1-night',
@@ -124,7 +123,7 @@ export const trip: Trip = {
       day: 2,
       date: '2027-01-23',
       title: '텐진 면세 · 쇼핑 투어',
-      theme: '라멘 · 명란바게트 · 함바그 · 이와타야 · 다이묘',
+      theme: '라멘 · 명란바게트 · 함바그 · 이와타야 · 스시 → 야키니쿠',
       items: [
         {
           id: 'd2-breakfast',
@@ -163,14 +162,23 @@ export const trip: Trip = {
           places: ['montbell', 'kego', 'northface', 'latte-mania', 'onitsuka', 'tenjin-chika', 'donki-tenjin'],
         },
         {
-          id: 'd2-dinner',
-          time: '저녁',
-          title: '저녁 — 1차 스시 → 2차 야키니쿠',
-          status: 'confirmed',
-          places: ['kego-takami', 'akatan'],
-          note: '3인 합의 확정 · 케고 타카미 스시 전화 예약 예정 / 아카탄은 타베로그 온라인 예약',
+          id: 'd2-dinner1',
+          time: '18:00',
+          title: '저녁 1차 — 스시 코스',
+          status: 'pending',
+          places: ['sushi-mitsu'],
+          note: '3인 합의 · 수빈이 타베로그 예약 진행 중 (18:00 기준, 후보 18:30) · 13품 ¥5,500 · 1시간 30분',
+        },
+        {
+          id: 'd2-dinner2',
+          time: '20:00',
+          title: '저녁 2차 — 야키니쿠',
+          status: 'booked',
+          places: ['akatan'],
+          note: '20:00 성인 3명 카운터석(금연) · 1시간 30분 · 15분 이상 지각 시 자동 취소 — 19:50엔 출발!',
         },
       ],
+      excluded: ['kego-takami'],
     },
     {
       day: 3,
@@ -192,7 +200,7 @@ export const trip: Trip = {
           title: '아점 — 우동',
           status: 'confirmed',
           places: ['daichi-udon'],
-          note: '다이치노우동 등',
+          note: '다이치노우동 등 — 세부 매장 미정',
         },
         {
           id: 'd3-souvenir',
@@ -232,13 +240,13 @@ export const trip: Trip = {
     { id: 't2', date: '2026-12-19', title: '니쿠이치 야쿠인점 예약 오픈', url: 'https://tablecheck.com/ko/nikuichi-yakuin/reserve' },
     { id: 't3', date: '2027-01-15T00:00', title: '히키니쿠 토 코메 무료 일반 예약 오픈 (자정)', url: 'https://www.tablecheck.com/shops/hikinikutocome-imaizumi/reserve' },
     { id: 't5', date: '2027-01-21T23:59', title: 'APA 호텔 무료 취소 마감', note: '이후 취소 시 100% 부과' },
-    { id: 't4', date: '2027-01-21', title: '마에다야 하카타점(19:30) 예약 전화 취소', note: '수빈 담당', url: 'https://maedayahakata.toreta.at/' },
   ],
 
   risks: [
     '야구라 카츠동(やぐら): 구글맵상 임시 휴업 표시 — 1월 중순 재개 여부 재확인',
     '히키니쿠 토 코메 예약 방식(우선 티켓 vs 일반 예약) 결정',
-    '케고 타카미 스시 전화 예약 · 야키니쿠 아카탄 타베로그 예약',
+    '스시 미쓰(1/23 18:00) 타베로그 예약 확정 여부 확인 — 확정되면 시간 반영',
+    '일요일 아점(10:00 우동) 세부 매장 결정 (다이치노우동 등)',
   ],
 
   packing: [
