@@ -3,6 +3,7 @@ export type Status =
   | 'confirmed' // 확정
   | 'booked' // 예약완료
   | 'pending' // 조율중
+  | 'walkin' // 워크인 (예약 없이 당일 순번대로 시도)
   | 'candidate' // 후보
   | 'optional' // 선택
   | 'excluded'; // 제외

@@ -2,7 +2,7 @@ import type { Trip } from './types';
 
 /**
  * ★ 여행 일정 데이터 — 일정이 바뀌면 이 파일만 고치고 push 하세요.
- *   status: confirmed(확정) | booked(예약완료) | pending(조율중) | candidate(후보) | optional(선택) | excluded(제외)
+ *   status: confirmed(확정) | booked(예약완료) | pending(조율중) | walkin(워크인: places=1순위, alternatives=2순위~) | candidate(후보) | optional(선택) | excluded(제외)
  *   places / alternatives 에는 places.ts 의 id 를 넣습니다.
  *   수정할 때 updatedAt 도 같이 바꿔 주세요.
  */
@@ -11,7 +11,7 @@ export const trip: Trip = {
   startDate: '2027-01-22',
   endDate: '2027-01-24',
   members: ['조수빈', '이지연', '안광의'],
-  updatedAt: '2026-11-25 20:59',
+  updatedAt: '2026-11-26 22:00',
 
   flights: [
     {
@@ -114,7 +114,7 @@ export const trip: Trip = {
           title: '장보기 → 사케·오뎅바',
           status: 'confirmed',
           places: ['kitte-mart', 'hotel-apa', 'oden-bar'],
-          note: '3인 합의 확정 · KITTE B1F 마트(21:00 마감)에서 장보고 숙소에 짐 둔 뒤 츠키후타츠',
+          note: '3인 합의 확정 · KITTE B1F 마트(21:00 마감)에서 장보고 숙소에 짐 둔 뒤 츠키후타츠 · 야식 몬자야키 후보(우사기요리카메·만보)는 당일 컨디션 보고',
         },
       ],
       excluded: ['lalaport'],
@@ -123,7 +123,7 @@ export const trip: Trip = {
       day: 2,
       date: '2027-01-23',
       title: '텐진 면세 · 쇼핑 투어',
-      theme: '라멘 · 명란바게트 · 함바그 · 이와타야 · 스시 → 야키니쿠',
+      theme: '라멘 · 명란바게트 · 함바그 · 이와타야 · 스시(워크인) → 야키니쿠',
       items: [
         {
           id: 'd2-breakfast',
@@ -164,10 +164,11 @@ export const trip: Trip = {
         {
           id: 'd2-dinner1',
           time: '18:00',
-          title: '저녁 1차 — 스시 코스',
-          status: 'pending',
-          places: ['sushi-mitsu'],
-          note: '3인 합의 · 수빈이 타베로그 예약 진행 중 (18:00 기준, 후보 18:30) · 13품 ¥5,500 · 1시간 30분',
+          title: '저녁 1차 — 스시 (워크인)',
+          status: 'walkin',
+          places: ['kitaro-sushi'],
+          alternatives: ['sashisu-tenjin', 'sashisu-one', 'sushi-yoshimi'],
+          note: '예약 없이 당일 웨이팅 보고 1순위부터 순서대로 시도 · 20:00 아카탄 때문에 19:45까지 마무리',
         },
         {
           id: 'd2-dinner2',
@@ -175,10 +176,10 @@ export const trip: Trip = {
           title: '저녁 2차 — 야키니쿠',
           status: 'booked',
           places: ['akatan'],
-          note: '20:00 성인 3명 카운터석(금연) · 1시간 30분 · 15분 이상 지각 시 자동 취소 — 19:50엔 출발!',
+          note: '20:00 성인 3명 카운터석(금연) · 1시간 30분 · 15분 이상 지각 시 자동 취소 — 1차는 19:45까지 끝내고 이동',
         },
       ],
-      excluded: ['kego-takami'],
+      excluded: ['sushi-mitsu', 'kego-takami'],
     },
     {
       day: 3,
@@ -200,13 +201,13 @@ export const trip: Trip = {
           title: '아점 — 우동',
           status: 'confirmed',
           places: ['daichi-udon'],
-          note: '다이치노우동 등 — 세부 매장 미정',
+          note: '하카타역 앞 · 10시 오픈',
         },
         {
           id: 'd3-souvenir',
           time: '11:00',
           title: '기념품 쇼핑',
-          status: 'candidate',
+          status: 'confirmed',
           places: ['ming'],
         },
         {
@@ -245,8 +246,7 @@ export const trip: Trip = {
   risks: [
     '야구라 카츠동(やぐら): 구글맵상 임시 휴업 표시 — 1월 중순 재개 여부 재확인',
     '히키니쿠 토 코메 예약 방식(우선 티켓 vs 일반 예약) 결정',
-    '스시 미쓰(1/23 18:00) 타베로그 예약 확정 여부 확인 — 확정되면 시간 반영',
-    '일요일 아점(10:00 우동) 세부 매장 결정 (다이치노우동 등)',
+    '1/23 1차 스시는 워크인 — 키타로 스시 대기 길면 2·3·4순위로 전환, 아카탄 지각 자동 취소라 19:45까지 1차 종료',
   ],
 
   packing: [

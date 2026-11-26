@@ -22,11 +22,13 @@ function nowItemId(items: ScheduleItem[]): string | null {
   return found;
 }
 
-function TimelineItem({ item, isNow, color, prev }: { item: ScheduleItem; isNow: boolean; color: string; prev?: Place }) {
+function TimelineItem({ item, isNow, color, prev, next }: { item: ScheduleItem; isNow: boolean; color: string; prev?: Place; next?: Place }) {
   const [altOpen, setAltOpen] = useState(false);
   const mains = item.places.map((id) => placeMap[id]).filter(Boolean);
   const alts = (item.alternatives ?? []).map((id) => placeMap[id]).filter(Boolean);
   const route = mains.length > 2 ? routeUrl(mains) : null;
+  const walkin = item.status === 'walkin';
+  const candidates = [...mains, ...alts];
 
   return (
     <div className={`tl-item${isNow ? ' now' : ''}`} style={{ ['--day-color' as string]: color }}>
@@ -45,7 +47,25 @@ function TimelineItem({ item, isNow, color, prev }: { item: ScheduleItem; isNow:
               <LegRow from={prev} to={mains[0]} />
             </div>
           )}
-          {mains.map((p, i) => (
+          {walkin && (
+            <>
+              <div className="walkin-head">워크인 후보 · 당일 순번대로 시도</div>
+              <div className="walkin-box">
+                {candidates.map((p, i) => (
+                  <div key={p.id}>
+                    <PlaceRow place={p} index={i + 1} />
+                    {next && (
+                      <div className="leg-wrap">
+                        <span className="faint xs">{next.name}까지</span>
+                        <LegRow from={p} to={next} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {!walkin && mains.map((p, i) => (
             <div key={p.id}>
               {i > 0 && (
                 <div className="leg-wrap inner">
@@ -62,7 +82,7 @@ function TimelineItem({ item, isNow, color, prev }: { item: ScheduleItem; isNow:
               </a>
             </div>
           )}
-          {alts.length > 0 && (
+          {!walkin && alts.length > 0 && (
             <>
               <button className="alt-toggle" onClick={() => setAltOpen((o) => !o)}>
                 대안 · 후보 {alts.length}곳
@@ -136,7 +156,9 @@ export function Schedule() {
           // 직전 일정의 마지막 장소 → 이번 일정 첫 장소 이동 정보
           const prevItem = current.items.slice(0, idx).reverse().find((p) => p.places.length > 0);
           const prev = prevItem ? placeMap[prevItem.places[prevItem.places.length - 1]] : undefined;
-          return <TimelineItem key={it.id} item={it} isNow={it.id === nowId} color={color} prev={prev} />;
+          const nextItem = current.items.slice(idx + 1).find((n) => n.places.length > 0);
+          const next = nextItem ? placeMap[nextItem.places[0]] : undefined;
+          return <TimelineItem key={it.id} item={it} isNow={it.id === nowId} color={color} prev={prev} next={next} />;
         })}
       </div>
 

@@ -24,9 +24,8 @@ description: 후쿠오카 여행 앱(지연이와 아이들의 후쿠오카 여�
 4. **추가 레이아웃·기능 (선택)**: 데이터 성격상 꼭 필요하면 추가해도 된다 — 예: 새 필드를 보여줄 화면 요소, 새 종류의 알림, 예약 상세 카드 등. **필요 없으면 추가하지 않는다.** 추가할 땐 기존 컴포넌트·CSS 토큰(`src/styles/global.css`)·디자인 톤(깔끔·심플)을 따른다.
 5. **개인정보 주의**: 레포와 사이트는 public이다. 예약번호, 결제 금액, 전화번호, 이메일 등은 사용자가 명시적으로 원할 때만 넣는다.
 6. **검증**: `npm run build` 통과 → `preview_start {name: "web"}`로 열어(`/fukuoka-trip/#/schedule?day=N`) 바뀐 날짜·홈 화면을 `get_page_text`로 확인, 콘솔 에러 없는지 확인 → 프리뷰 종료.
-7. **커밋·push·배포**
+7. **커밋·push (여기서 작업 종료)**
    - main에 커밋(메시지는 한국어로 무엇이 바뀌었는지 요약) 후 `git push`.
-   - push하면 `.github/workflows/deploy.yml`이 자동으로 Pages에 배포한다: `gh run list --workflow deploy.yml -L1`로 run id 확인 → `gh run watch <id> --exit-status`.
-   - 배포 확인: `https://gwanguian.github.io/fukuoka-trip/`의 `assets/index-*.js`를 curl로 받아 새로 넣은 문자열이 있는지 grep.
-   - 설치된 앱·PWA는 원격 URL을 로드하고 자동 업데이트되므로 APK 재빌드는 필요 없다 (아이콘·앱 이름·Capacitor 설정을 바꾼 경우에만 `gh workflow run android.yml`).
+   - push하면 `.github/workflows/deploy.yml`이 자동으로 Pages에 배포하므로 **push 이후 작업은 하지 않는다** — Actions 대기(`gh run watch`), 배포 사이트 curl 확인, APK 재빌드 등은 하지 말고 바로 보고로 넘어간다.
+   - 설치된 앱·PWA는 원격 URL을 로드하고 자동 업데이트되므로 APK 재빌드는 필요 없다. 아이콘·앱 이름·Capacitor 설정을 바꿨다면 재빌드가 필요하다고 보고에만 적는다.
 8. **보고**: 바뀐 점, 삭제한 것, 추가 기능(있다면), 넣지 않은 정보와 이유, 데이터상 애매해서 판단한 부분을 짧게 알려준다.

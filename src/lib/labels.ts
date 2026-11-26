@@ -4,6 +4,7 @@ export const STATUS_LABEL: Record<Status, string> = {
   confirmed: '확정',
   booked: '예약완료',
   pending: '조율중',
+  walkin: '워크인',
   candidate: '후보',
   optional: '선택',
   excluded: '제외',
