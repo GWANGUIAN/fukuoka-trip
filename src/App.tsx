@@ -1,5 +1,6 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { BottomNav } from './components/BottomNav';
+import { PullToRefresh } from './components/PullToRefresh';
 import { Home } from './pages/Home';
 import { Schedule } from './pages/Schedule';
 import { MapPage } from './pages/MapPage';
@@ -9,6 +10,7 @@ import { Info } from './pages/Info';
 export default function App() {
   return (
     <HashRouter>
+      <PullToRefresh />
       <div className="app">
         <Routes>
           <Route path="/" element={<Home />} />
