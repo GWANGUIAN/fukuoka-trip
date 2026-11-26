@@ -73,7 +73,7 @@ android/           Capacitor 생성 프로젝트(커밋됨)
 - **일정**: DAY 탭(`?day=N`, 여행 당일엔 오늘 자동 선택), 날씨·옷차림 줄, 타임라인, 직전 일정 마지막 장소 → 이번 첫 장소 이동, 장소 간 이동, 대안 접기, 워크인 후보, 현재 시각 하이라이트(1분 갱신), 영업 배지(당일 = 지금 기준 live, 그 외 = 일정 HH:MM 기준 plan), 로그인 시 일정별 사진 줄·업로드, 제외 목록.
 - **함께**: 초대 코드 + 멤버 선택 로그인(AuthGate). 앨범(일자→일정별 그리드, 라이트박스 스와이프·원본·내 사진 삭제) / 지갑(표시 통화 ₩/¥, 3인 공통 환율 `settings.rate`, 총비용·인당, 송금 목록 100원 반올림, 분류별, 일자별 목록). 사전 정산분(`settled=1`, category `prepaid` — 항공·호텔)은 총비용에만 포함, 수정·삭제 불가. 장소 상세 "지출 추가" → `/together?tab=wallet&add=<placeId>&day=N`.
 - **지도**: 날짜 필터, 일자 색 번호 핀(AdvancedMarker)·폴리라인, fitBounds, 권역별 목록, 바텀시트. API 키 없으면 목록+외부 링크로 fallback.
-- **체크**: 예약 오픈 D-day, risks, packing 체크(localStorage).
+- **체크**: 푸시 알림 켜기 카드(PushCard: 켜기·테스트·끄기, 아이폰 비설치·APK·차단 안내), 예약 오픈 D-day + 🔔 남은 알림 시각, risks, packing 체크(localStorage).
 - **정보**: 메뉴판·간판 번역(사진 → 1280px jpeg → Worker: Llama 4 Scout로 글자 읽기 → Llama 3.3 70B로 한국어 이름·설명, 10–30초, 1인 하루 40회, 최근 5개 기기 저장), 엔→원 계산기(기본 9.3원/엔, 저장됨, 세전 ¥5,000 면세 체크 = 가격/1.1), tips, links, 앱 설치 안내.
 
 ## 플랫폼 동작
@@ -97,7 +97,13 @@ android/           Capacitor 생성 프로젝트(커밋됨)
 - CORS: `ALLOWED_ORIGINS`(wrangler.toml vars)에 있는 origin만 반사. OPTIONS는 인증 전 204, 모든 에러 응답에도 CORS 헤더. 쿠키 없이 Bearer 토큰. `<img>`는 서명 URL(`/img/:id/:variant?exp&sig`, 하루 단위 만료로 URL 고정 → 캐시).
 - 프론트 API 주소: GitHub repo variable `VITE_API_URL` → deploy.yml. 로컬은 `.env.local`. 로컬 Worker로 테스트하려면 `.env.development.local`에 `VITE_API_URL=http://localhost:8787` + launch.json `api`(wrangler dev, D1·R2 로컬, AI는 원격).
 - Workers AI 무료 플랜: Gemma 3·DeepSeek 등 일부 모델은 막혀 있고 Qwen3-30B는 지원 종료. 모델 바꿀 땐 `npx wrangler ai models`로 확인.
-- 제한: 번역 1인 하루 40회, 사진 1인 하루 300장(원본 ≤25MB), 로그인 실패 IP당 분당 5회 (`usage` 테이블).
+- **푸시 알림**(예약 오픈·할 일만): 빌드 때 vite 플러그인이 `trip.todos` → `dist/notify.json`. Worker cron(`*/5 * * * *`) → `runCron`(notify.ts)이 그 json을 읽고 `dueNotices`(worker/src/notifyRules.ts — 프론트 체크 탭 🔔 표시도 같은 파일을 import)로 계산 → `push_subs` 전체에 Web Push(webpush.ts: RFC 8291 aes128gcm + VAPID, 의존성 없음) → `push_sent`에 키 기록(중복 방지, 날짜 바뀌면 새 키).
+  - 규칙: 시각 있음 = 전날 21:00 + 10분 전 / 날짜만 = 전날 21:00 + 당일 09:00 (KST), 1시간 넘게 늦은 알림은 버림.
+  - 서비스워커: `public/push-sw.js`(push·notificationclick)를 workbox `importScripts`로 포함. 개발 서버(`npm run dev`)에선 SW가 없으니 `web-prod`(빌드 후 vite preview) 설정으로 확인.
+  - 키: `VAPID_PUBLIC`(wrangler.toml vars) · `VAPID_PRIVATE_JWK`(secret, 로컬은 `.dev.vars`). 키를 바꾸면 기존 구독이 전부 무효.
+  - 지원: 안드로이드 크롬/크롬 PWA, 아이폰은 홈 화면에 추가한 PWA(iOS 16.4+)만. **APK(Capacitor) 앱은 웹 푸시 불가** → 체크 탭에서 크롬으로 안내.
+  - 암호화 검증: `node worker/scripts/test-webpush.mjs` (RFC 8291 부록 A 벡터).
+- 제한: 번역 1인 하루 40회, 사진 1인 하루 300장(원본 ≤25MB), 테스트 알림 하루 10회, 로그인 실패 IP당 분당 5회 (`usage` 테이블).
 
 ## 주의할 점 (과거에 겪은 문제)
 - `useEffect(() => window.scrollTo(0,0))`처럼 값을 반환하는 화살표 함수는 "destroy is not a function" 에러 → 블록 본문으로.

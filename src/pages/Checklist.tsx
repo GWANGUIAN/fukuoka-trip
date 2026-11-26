@@ -1,7 +1,9 @@
 import type { ReactNode } from 'react';
-import { AlertTriangle, CalendarClock, Check, Luggage } from 'lucide-react';
+import { AlertTriangle, BellRing, CalendarClock, Check, Luggage } from 'lucide-react';
 import { trip } from '../data/trip';
-import { daysUntil, ddayLabel, formatDate } from '../lib/date';
+import { currentTime, daysUntil, ddayLabel, formatDate } from '../lib/date';
+import { PushCard } from '../components/PushCard';
+import { upcomingLabels } from '../../worker/src/notifyRules';
 import { useLocalStorage } from '../lib/storage';
 
 function CheckRow({
@@ -14,7 +16,7 @@ function CheckRow({
 }: {
   id: string;
   label: string;
-  sub?: string;
+  sub?: ReactNode;
   checked: boolean;
   onToggle: (id: string) => void;
   right?: ReactNode;
@@ -46,16 +48,26 @@ export function Checklist() {
 
       <section>
         <h2 className="section-title"><CalendarClock size={16} /> 예약 오픈 · 할 일</h2>
+        <div className="stack">
+        <PushCard />
         <div className="card list">
           {trip.todos.map((t) => {
             const key = `todo-${t.id}`;
             const [d, time] = t.date.split('T');
+            const bells = upcomingLabels(t, currentTime().getTime());
             return (
               <CheckRow
                 key={t.id}
                 id={key}
                 label={t.title}
-                sub={`${formatDate(d)}${time ? ` ${time}` : ''}${t.note ? ` · ${t.note}` : ''}`}
+                sub={
+                  <>
+                    {formatDate(d)}{time ? ` ${time}` : ''}{t.note ? ` · ${t.note}` : ''}
+                    {bells.length > 0 && (
+                      <span className="bell-line"><BellRing size={11} /> {bells.join(' · ')}</span>
+                    )}
+                  </>
+                }
                 checked={!!done[key]}
                 onToggle={toggle}
                 right={
@@ -67,6 +79,7 @@ export function Checklist() {
               />
             );
           })}
+        </div>
         </div>
       </section>
 

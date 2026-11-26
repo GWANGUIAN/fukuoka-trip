@@ -6,6 +6,9 @@ workers_dev = true
 [vars]
 ALLOWED_ORIGINS = "https://gwanguian.github.io,http://localhost:5173,https://localhost"
 MEMBERS = "조수빈,이지연,안광의"
+NOTIFY_SOURCE = "https://gwanguian.github.io/fukuoka-trip/notify.json"
+VAPID_SUBJECT = "https://gwanguian.github.io/fukuoka-trip/"
+VAPID_PUBLIC = "BCPaJCFxaR3Bp-1ibJGR67g-16w3KxnOsDnSRhE-mFTtVdJZtGJunBN7_5rGqpLX2EaAyO2Ih1BadLmtsLusCHc"
 
 [[d1_databases]]
 binding = "DB"
@@ -22,3 +25,7 @@ binding = "AI"
 
 [observability]
 enabled = true
+
+# 푸시 알림: 5분마다 notify.json 확인
+[triggers]
+crons = ["*/5 * * * *"]

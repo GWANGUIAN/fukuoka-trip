@@ -6,6 +6,10 @@ export interface Env {
   MEMBERS: string;
   INVITE_CODE: string;
   TOKEN_SECRET: string;
+  NOTIFY_SOURCE: string;
+  VAPID_PUBLIC: string;
+  VAPID_SUBJECT: string;
+  VAPID_PRIVATE_JWK: string;
 }
 
 export class HttpError extends Error {

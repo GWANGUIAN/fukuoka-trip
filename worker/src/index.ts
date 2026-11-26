@@ -3,6 +3,7 @@ import { createExpense, deleteExpense, listExpenses, setRate, updateExpense } fr
 import { HttpError, corsHeaders, json, withCors, type Env } from './http';
 import { deletePhoto, listPhotos, serveImage, uploadPhoto } from './photos';
 import { translate } from './translate';
+import { pushKey, runCron, subscribe, testPush, unsubscribe } from './notify';
 
 async function route(req: Request, env: Env): Promise<Response> {
   const { pathname } = new URL(req.url);
@@ -11,6 +12,7 @@ async function route(req: Request, env: Env): Promise<Response> {
 
   if (m === 'GET' && pathname === '/health') return json({ ok: true });
   if (m === 'POST' && pathname === '/auth') return login(req, env);
+  if (m === 'GET' && pathname === '/push/key') return pushKey(env);
   // 이미지는 <img>로 불러오므로 헤더 대신 서명 URL로 검증
   if (m === 'GET' && seg[0] === 'img' && seg.length === 3) return serveImage(req, env, seg[1], seg[2]);
 
@@ -34,6 +36,10 @@ async function route(req: Request, env: Env): Promise<Response> {
 
   if (m === 'POST' && pathname === '/translate') return translate(req, env, member);
 
+  if (m === 'POST' && pathname === '/push/subscribe') return subscribe(req, env, member);
+  if (m === 'DELETE' && pathname === '/push/subscribe') return unsubscribe(req, env);
+  if (m === 'POST' && pathname === '/push/test') return testPush(req, env, member);
+
   throw new HttpError(404, '없는 주소예요');
 }
 
@@ -50,5 +56,9 @@ export default {
       if (status === 500) console.error(e);
       return withCors(json({ error: message }, status), cors);
     }
+  },
+
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext) {
+    ctx.waitUntil(runCron(env).catch((e) => console.error('cron', e)));
   },
 } satisfies ExportedHandler<Env>;

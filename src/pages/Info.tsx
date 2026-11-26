@@ -50,8 +50,8 @@ export function Info() {
       <section>
         <h2 className="section-title"><Smartphone size={16} /> 앱으로 쓰기</h2>
         <div className="card small muted stack">
-          <div>안드로이드: GitHub Releases에서 APK를 받아 설치하거나, 크롬 메뉴 → <b>홈 화면에 추가</b>.</div>
-          <div>아이폰: 사파리 공유 버튼 → <b>홈 화면에 추가</b>.</div>
+          <div>안드로이드: 크롬 메뉴 → <b>홈 화면에 추가</b>(추천 · 예약 오픈 알림 지원). GitHub Releases의 APK 앱은 알림이 없어요.</div>
+          <div>아이폰: 사파리 공유 버튼 → <b>홈 화면에 추가</b> → 추가된 앱에서 체크 탭 알림 켜기.</div>
           <div>한 번 열어두면 오프라인에서도 일정을 볼 수 있어요.</div>
         </div>
       </section>

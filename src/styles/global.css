@@ -325,3 +325,4 @@ h1, h2, h3, p { margin: 0; }
 .tl-photos { display: flex; align-items: center; gap: 6px; margin-top: 10px; }
 .tl-photos .photo-strip { margin-top: 0; flex: 1; }
 .tr-preview { width: 100%; max-height: 220px; object-fit: contain; border-radius: 12px; background: var(--surface-2); }
+.bell-line { display: flex; align-items: center; gap: 4px; margin-top: 2px; color: var(--st-booked); font-weight: 600; }
