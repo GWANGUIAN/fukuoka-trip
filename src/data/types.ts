@@ -17,6 +17,12 @@ export interface LinkItem {
   url: string;
 }
 
+/** 요일별 영업시간 — days: 0=일 … 6=토, ranges: ["17:00","24:00"] (자정 넘김은 "25:30"처럼) */
+export interface OpenRule {
+  days: number[];
+  ranges: [string, string][];
+}
+
 export interface Place {
   id: string;
   name: string;
@@ -29,8 +35,13 @@ export interface Place {
   /** 대략 좌표 (지도 핀용). 정확한 위치는 구글맵 링크 기준 */
   lat: number;
   lng: number;
+  /** 표시용 영업시간 문구 */
   hours?: string;
   closed?: string;
+  /** 영업 중 배지용 구조화 영업시간 (규칙에 없는 요일은 '모름' → 배지 숨김) */
+  openHours?: OpenRule[];
+  /** 정기 휴무 요일 (0=일 … 6=토) */
+  closedDays?: number[];
   /** 구글맵 링크 (cid 링크 등). 없으면 이름으로 검색 링크 자동 생성 */
   mapUrl?: string;
   reserveUrl?: string;

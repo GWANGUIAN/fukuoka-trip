@@ -7,9 +7,14 @@ import { FlightRow } from '../components/FlightCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { PlaceActions } from '../components/PlaceActions';
 import { DAY_COLOR } from '../lib/labels';
+import { rainSummary, useWeather } from '../lib/weather';
+import { WeatherChip } from '../components/Weather';
 
 export function Home() {
   const phase = tripPhase();
+  const weather = useWeather();
+  const todayWeather = phase.kind === 'during' ? weather[trip.days[phase.day - 1]?.date] : undefined;
+  const todayRain = todayWeather ? rainSummary(todayWeather) : null;
   const hotel = placeMap[trip.hotel.placeId];
   const upcoming = trip.todos.filter((t) => daysUntil(t.date) >= 0).slice(0, 3);
   const undecided = trip.days.flatMap((d) =>
@@ -41,7 +46,7 @@ export function Home() {
           <Sun size={20} color="var(--primary)" />
           <div style={{ flex: 1 }}>
             <div style={{ fontWeight: 700 }}>오늘은 {phase.day}일차 · {trip.days[phase.day - 1]?.title}</div>
-            <div className="small muted">오늘 일정 바로 보기</div>
+            <div className="small muted">{todayRain ?? '오늘 일정 바로 보기'}</div>
           </div>
           <ChevronRight size={18} />
         </Link>
@@ -61,6 +66,7 @@ export function Home() {
                 <div style={{ fontWeight: 700 }}>{d.title}</div>
                 <div className="xs faint">{formatDate(d.date)} · {d.theme}</div>
               </div>
+              <WeatherChip w={weather[d.date]} />
               <ChevronRight size={18} className="faint" />
             </Link>
           ))}

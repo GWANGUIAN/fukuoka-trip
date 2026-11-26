@@ -5,14 +5,16 @@ import { trip } from '../data/trip';
 import { placeMap } from '../data/places';
 import type { Place, ScheduleItem } from '../data/types';
 import { LegRow } from '../components/LegRow';
-import { formatDate, timeToMinutes, tripPhase, weekday } from '../lib/date';
+import { currentTime, formatDate, parseDate, timeToMinutes, tripPhase, weekday } from '../lib/date';
 import { routeUrl } from '../lib/maps';
 import { DAY_COLOR } from '../lib/labels';
 import { StatusBadge } from '../components/StatusBadge';
-import { PlaceRow } from '../components/PlaceRow';
+import { PlaceRow, type OpenAt } from '../components/PlaceRow';
+import { DayWeatherLine } from '../components/Weather';
+import { useWeather } from '../lib/weather';
 
 function nowItemId(items: ScheduleItem[]): string | null {
-  const d = new Date();
+  const d = currentTime();
   const mins = d.getHours() * 60 + d.getMinutes();
   let found: string | null = null;
   for (const it of items) {
@@ -22,7 +24,7 @@ function nowItemId(items: ScheduleItem[]): string | null {
   return found;
 }
 
-function TimelineItem({ item, isNow, color, prev, next }: { item: ScheduleItem; isNow: boolean; color: string; prev?: Place; next?: Place }) {
+function TimelineItem({ item, isNow, color, prev, next, at }: { item: ScheduleItem; isNow: boolean; color: string; prev?: Place; next?: Place; at?: OpenAt }) {
   const [altOpen, setAltOpen] = useState(false);
   const mains = item.places.map((id) => placeMap[id]).filter(Boolean);
   const alts = (item.alternatives ?? []).map((id) => placeMap[id]).filter(Boolean);
@@ -53,7 +55,7 @@ function TimelineItem({ item, isNow, color, prev, next }: { item: ScheduleItem; 
               <div className="walkin-box">
                 {candidates.map((p, i) => (
                   <div key={p.id}>
-                    <PlaceRow place={p} index={i + 1} />
+                    <PlaceRow place={p} index={i + 1} at={at} />
                     {next && (
                       <div className="leg-wrap">
                         <span className="faint xs">{next.name}까지</span>
@@ -72,7 +74,7 @@ function TimelineItem({ item, isNow, color, prev, next }: { item: ScheduleItem; 
                   <LegRow from={mains[i - 1]} to={p} />
                 </div>
               )}
-              <PlaceRow place={p} index={mains.length > 1 ? i + 1 : undefined} />
+              <PlaceRow place={p} index={mains.length > 1 ? i + 1 : undefined} at={at} />
             </div>
           ))}
           {route && (
@@ -90,7 +92,7 @@ function TimelineItem({ item, isNow, color, prev, next }: { item: ScheduleItem; 
               </button>
               {altOpen && (
                 <div className="alt-box">
-                  {alts.map((p) => <PlaceRow key={p.id} place={p} />)}
+                  {alts.map((p) => <PlaceRow key={p.id} place={p} at={at} />)}
                 </div>
               )}
             </>
@@ -109,6 +111,7 @@ export function Schedule() {
   const day = paramDay >= 1 && paramDay <= trip.days.length ? paramDay : (todayDay ?? 1);
   const current = trip.days[day - 1];
   const color = DAY_COLOR[day - 1];
+  const weather = useWeather();
 
   const [tick, setTick] = useState(0);
   useEffect(() => {
@@ -149,6 +152,7 @@ export function Schedule() {
         <div className="xs" style={{ color, fontWeight: 700 }}>DAY {day} · {formatDate(current.date)}</div>
         <div className="t">{current.title}</div>
         <div className="small muted">{current.theme}</div>
+        <DayWeatherLine w={weather[current.date]} />
       </div>
 
       <div className="timeline">
@@ -158,7 +162,14 @@ export function Schedule() {
           const prev = prevItem ? placeMap[prevItem.places[prevItem.places.length - 1]] : undefined;
           const nextItem = current.items.slice(idx + 1).find((n) => n.places.length > 0);
           const next = nextItem ? placeMap[nextItem.places[0]] : undefined;
-          return <TimelineItem key={it.id} item={it} isNow={it.id === nowId} color={color} prev={prev} next={next} />;
+          // 영업 배지 기준 시각: 여행 당일이면 지금, 아니면 일정 예정 시각(HH:MM일 때만)
+          const at: OpenAt | undefined =
+            todayDay === day
+              ? { date: currentTime(), mode: 'live' }
+              : timeToMinutes(it.time) !== null
+                ? { date: parseDate(`${current.date}T${it.time}`), mode: 'plan' }
+                : undefined;
+          return <TimelineItem key={it.id} item={it} isNow={it.id === nowId} color={color} prev={prev} next={next} at={at} />;
         })}
       </div>
 

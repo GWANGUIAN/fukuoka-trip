@@ -11,16 +11,32 @@ export function parseDate(s: string): Date {
   return new Date(y, m - 1, day, hh, mm);
 }
 
+/**
+ * 현재 시각. 테스트용으로 `?now=2027-01-23T19:30`(해시 앞 쿼리)을 주면 그 시각부터 흐르는 시계로 덮어쓴다.
+ */
+const nowOffset = (() => {
+  try {
+    const q = new URLSearchParams(window.location.search).get('now');
+    return q ? parseDate(q).getTime() - Date.now() : 0;
+  } catch {
+    return 0;
+  }
+})();
+
+export function currentTime(): Date {
+  return new Date(Date.now() + nowOffset);
+}
+
 function startOfDay(d: Date) {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
 /** 오늘 기준 남은 일수 (양수 = 미래) */
-export function daysUntil(s: string, now = new Date()): number {
+export function daysUntil(s: string, now = currentTime()): number {
   return Math.round((startOfDay(parseDate(s)).getTime() - startOfDay(now).getTime()) / DAY_MS);
 }
 
-export function ddayLabel(s: string, now = new Date()): string {
+export function ddayLabel(s: string, now = currentTime()): string {
   const n = daysUntil(s, now);
   if (n === 0) return 'D-DAY';
   return n > 0 ? `D-${n}` : `D+${-n}`;
@@ -38,7 +54,7 @@ export function weekday(s: string): string {
 
 export type Phase = { kind: 'before'; days: number } | { kind: 'during'; day: number } | { kind: 'after' };
 
-export function tripPhase(now = new Date()): Phase {
+export function tripPhase(now = currentTime()): Phase {
   const toStart = daysUntil(trip.startDate, now);
   const toEnd = daysUntil(trip.endDate, now);
   if (toStart > 0) return { kind: 'before', days: toStart };
