@@ -6,6 +6,7 @@ import { Schedule } from './pages/Schedule';
 import { MapPage } from './pages/MapPage';
 import { Checklist } from './pages/Checklist';
 import { Info } from './pages/Info';
+import { Together } from './pages/Together';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/checklist" element={<Checklist />} />
+          <Route path="/together" element={<Together />} />
           <Route path="/info" element={<Info />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

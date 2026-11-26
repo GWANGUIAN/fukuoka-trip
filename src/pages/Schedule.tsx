@@ -12,6 +12,7 @@ import { StatusBadge } from '../components/StatusBadge';
 import { PlaceRow, type OpenAt } from '../components/PlaceRow';
 import { DayWeatherLine } from '../components/Weather';
 import { useWeather } from '../lib/weather';
+import { ItemPhotos } from '../components/album/ItemPhotos';
 
 function nowItemId(items: ScheduleItem[]): string | null {
   const d = currentTime();
@@ -24,7 +25,7 @@ function nowItemId(items: ScheduleItem[]): string | null {
   return found;
 }
 
-function TimelineItem({ item, isNow, color, prev, next, at }: { item: ScheduleItem; isNow: boolean; color: string; prev?: Place; next?: Place; at?: OpenAt }) {
+function TimelineItem({ item, day, isNow, color, prev, next, at }: { item: ScheduleItem; day: number; isNow: boolean; color: string; prev?: Place; next?: Place; at?: OpenAt }) {
   const [altOpen, setAltOpen] = useState(false);
   const mains = item.places.map((id) => placeMap[id]).filter(Boolean);
   const alts = (item.alternatives ?? []).map((id) => placeMap[id]).filter(Boolean);
@@ -84,6 +85,7 @@ function TimelineItem({ item, isNow, color, prev, next, at }: { item: ScheduleIt
               </a>
             </div>
           )}
+          <ItemPhotos day={day} item={item} />
           {!walkin && alts.length > 0 && (
             <>
               <button className="alt-toggle" onClick={() => setAltOpen((o) => !o)}>
@@ -169,7 +171,7 @@ export function Schedule() {
               : timeToMinutes(it.time) !== null
                 ? { date: parseDate(`${current.date}T${it.time}`), mode: 'plan' }
                 : undefined;
-          return <TimelineItem key={it.id} item={it} isNow={it.id === nowId} color={color} prev={prev} next={next} at={at} />;
+          return <TimelineItem key={it.id} item={it} day={day} isNow={it.id === nowId} color={color} prev={prev} next={next} at={at} />;
         })}
       </div>
 

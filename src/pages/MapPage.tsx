@@ -206,7 +206,7 @@ export function MapPage() {
                 <X size={20} />
               </button>
             </div>
-            <PlaceDetail place={selected.place} />
+            <PlaceDetail place={selected.place} showPhotos />
           </div>
         </div>
       )}

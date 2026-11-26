@@ -17,6 +17,7 @@ description: 후쿠오카 여행 앱(지연이와 아이들의 후쿠오카 여�
 2. **최신 데이터로 반영**
    - 상태 매핑: `[확정]`·`[3인 합의 확정]` → confirmed, `[예약완료]` → booked, `[예약 진행중]`·`[조율중]` → pending, `[후보]` → candidate, `(선택)` → optional/alternatives, `[제외]` → 해당 Day의 `excluded`.
    - 새 장소는 places.ts에 추가: 일본어 상호(`nameJa`), 알면 일본어 주소(`address` — 길찾기 검색에 최우선), cid 지도 링크(`mapUrl`), 대략 좌표(지도 핀·도보 시간 계산용). 주소를 모르면 WebSearch로 확인하되, 확실하지 않으면 넣지 말고 cid 링크만 둔다.
+   - 영업시간을 알면 표시용 `hours` 문구와 함께 **`openHours`**(요일별 구간, 0=일…6=토, 자정 넘김은 "25:30")와 정기 휴무 `closedDays`도 채운다 → 일정의 "영업 중" 배지에 쓰인다. 특정 요일만 알면 그 요일만 넣는다(규칙 없는 요일은 배지 숨김). hours를 바꾸면 openHours도 같이 고친다.
    - 예약 상세(시간·인원·좌석·코스/가격·체류 시간·노쇼 규칙)는 장소의 `reservation.note`/`memo` 또는 일정 `note`에 넣는다.
    - 예약 오픈일·취소 마감 같은 날짜는 `todos`에, 미확정 사항은 `risks`에.
    - `updatedAt`을 새 데이터 기준 시각으로 갱신.

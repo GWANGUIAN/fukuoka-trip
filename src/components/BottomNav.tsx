@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { CalendarDays, Home, Info, ListChecks, Map } from 'lucide-react';
+import { CalendarDays, Home, Info, ListChecks, Map, Users } from 'lucide-react';
 
 const TABS = [
   { to: '/', label: '홈', Icon: Home },
   { to: '/schedule', label: '일정', Icon: CalendarDays },
   { to: '/map', label: '지도', Icon: Map },
   { to: '/checklist', label: '체크', Icon: ListChecks },
+  { to: '/together', label: '함께', Icon: Users },
   { to: '/info', label: '정보', Icon: Info },
 ];
 

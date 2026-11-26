@@ -1,0 +1,24 @@
+name = "fukuoka-trip-api"
+main = "src/index.ts"
+compatibility_date = "2025-11-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://gwanguian.github.io,http://localhost:5173,https://localhost"
+MEMBERS = "조수빈,이지연,안광의"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fukuoka-trip"
+database_id = "1845c84b-f28e-42a8-8a2c-89ec0e24f3f8"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "fukuoka-trip-photos"
+
+[ai]
+binding = "AI"
+
+[observability]
+enabled = true

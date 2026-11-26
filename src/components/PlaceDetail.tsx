@@ -1,8 +1,9 @@
 import { Clock, Info, Ticket, CalendarX } from 'lucide-react';
 import type { Place } from '../data/types';
 import { BlogLinks, PlaceActions } from './PlaceActions';
+import { PlaceExtras } from './PlaceExtras';
 
-export function PlaceDetail({ place }: { place: Place }) {
+export function PlaceDetail({ place, showPhotos = false }: { place: Place; showPhotos?: boolean }) {
   return (
     <div className="place-detail">
       {place.nameJa && <div className="faint xs">{place.nameJa}</div>}
@@ -20,6 +21,7 @@ export function PlaceDetail({ place }: { place: Place }) {
       )}
       <BlogLinks place={place} />
       <PlaceActions place={place} />
+      <PlaceExtras place={place} showPhotos={showPhotos} />
     </div>
   );
 }
