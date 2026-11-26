@@ -74,10 +74,16 @@ git add src/data && git commit -m "일정 업데이트" && git push
 
 ```bash
 npm install
-cp .env.example .env.local   # 지도 키 입력 (docs/GOOGLE_MAPS_SETUP.md)
+cp .env.example .env.local   # 지도 키 + VITE_API_URL(백엔드 주소) 입력 (docs/GOOGLE_MAPS_SETUP.md)
 npm run dev                  # http://localhost:5173/fukuoka-trip/
 npm run build
+
+# 백엔드 (Cloudflare Worker)
+cd worker && npm install
+npx wrangler dev             # 로컬 http://localhost:8787 (D1·R2 로컬, 비밀값은 worker/.dev.vars)
+npx wrangler deploy          # 배포
 ```
+- 함께 탭·번역·알림은 백엔드가 필요해요. `VITE_API_URL`이 없으면 해당 기능은 "백엔드 미설정" 안내로 대신 보여요.
 
 - Vite + React 18 + TypeScript, React Router(Hash), vite-plugin-pwa
 - 지도: `@vis.gl/react-google-maps` — 설정은 [docs/GOOGLE_MAPS_SETUP.md](docs/GOOGLE_MAPS_SETUP.md)
