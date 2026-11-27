@@ -2,14 +2,14 @@ import { HttpError, bumpUsage, jstDate, json, type Env } from './http';
 
 /** 1단계: 사진에서 일본어 읽기 (비전) → 2단계: 한국어 번역·설명 (큰 텍스트 모델) */
 const VISION_MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct';
-const TEXT_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+const TEXT_MODEL = '@cf/openai/gpt-oss-120b';
 const MAX_BYTES = 1.5 * 1024 * 1024;
 const DAILY_LIMIT = 40;
 
 const OCR_PROMPT = `Transcribe the Japanese text in this photo (menu, sign, notice, label).
 Return JSON only: {"type":"menu"|"sign"|"other","lines":[{"ja":"exact Japanese text of one item or sentence","price_yen":number or null}]}
-- Copy characters exactly as printed (keep symbols like 〆, （）, 個).
-- One menu item per line, in printed order. Put the price of that item in price_yen (number only).
+- Copy characters exactly as printed (keep symbols like 〆, （）, 個). On izakaya menus the mark 〆 (shime, "final dish") is common — do not read it as メ or め.
+- One menu item per line, in printed order. If a price is printed next to the item (e.g. 1,480円, ¥680, 税込550), put it in price_yen as a number (1480) and do not repeat it in ja.
 - Headings or notices are separate lines with price_yen null.`;
 
 const OCR_SCHEMA = {
@@ -28,14 +28,16 @@ const OCR_SCHEMA = {
   required: ['type', 'lines'],
 };
 
-const TR_PROMPT = `너는 일본 음식과 일본어를 잘 아는 한국인 통역사야. 후쿠오카를 여행하는 한국인에게 아래 일본어를 설명해 줘.
-입력은 사진에서 읽은 줄 목록(JSON)이야. 각 줄마다 같은 순서로 번역하고 JSON 하나만 출력해:
-{"summary":"무엇인지 한국어 한 문장 (예: 이자카야 오늘의 추천 메뉴)","items":[{"ja":"원문 그대로","ko":"한국 사람이 아는 이름","desc":"재료·맛·먹는 법을 한국어 한 줄","price_yen":원문 가격}]}
+const TR_PROMPT = `너는 일본 음식과 일본어를 잘 아는 한국인 통역사야. 후쿠오카를 여행하는 한국인에게 사진에서 읽은 일본어를 설명해 줘.
+입력은 사진에서 읽은 줄 목록(JSON)이야. 각 줄마다 같은 순서로 하나씩 번역하고 JSON 하나만 출력해:
+{"summary":"무엇인지 한국어 한 문장 (예: 이자카야 오늘의 추천 메뉴)","items":[{"ja":"원문 그대로","ko":"한국어 이름","desc":"한국어 설명 한 줄","price_yen":원문 가격 또는 null}]}
 규칙:
-- ko: 한국어 이름 + 필요하면 일본어 발음 괄호 (예: 冷奴 → 히야얏코(차가운 두부), 醤油 → 간장, 〆 → 마무리 식사).
-- desc: 이름을 반복하지 말고 무엇이 들어가고 어떤 맛인지/어떻게 먹는지 15~40자로. 확실하지 않으면 "~로 보임"이라고 써.
-- 제목·안내문 줄은 ko에 번역, desc에 뜻을 짧게.
-- 읽기 오류로 보이는 글자(예: メの → 〆の)는 문맥에 맞게 바로잡아.`;
+- ko와 desc, summary는 반드시 한국어(한글)로만 써. 히라가나·가타카나·한자를 남기지 마. (×: 생ビール, 명태 다시巻き玉子 / ○: 생맥주, 명란 달걀말이)
+- ko: 한국 사람이 바로 알아듣는 이름. 일본 고유 요리는 발음을 한글로 쓰고 괄호에 뜻 (예: 冷奴 → 히야얏코(차가운 두부), もつ鍋 → 모츠나베(소 곱창 전골), ごまさば → 고마사바(참깨 간장 고등어회), 唐揚げ → 가라아게(일본식 닭튀김), 明太子 → 명란젓, 〆 → 마무리 식사).
+- desc: 이름을 반복하지 말고 재료·맛·먹는 법을 15~40자로. 원문에 없는 재료를 지어내지 말고, 확실하지 않으면 "~로 보임"이라고 써.
+- 제목·안내문(가격 없는 줄)은 ko에 번역, desc에 짧은 뜻.
+- 사진 읽기 오류로 보이는 글자는 문맥에 맞게 바로잡아 해석해 (예: メの·めの → 〆の, ロ → 口).
+- price_yen은 입력 값을 그대로 옮겨.`;
 
 const TR_SCHEMA = {
   type: 'object',
@@ -56,6 +58,12 @@ const TR_SCHEMA = {
     },
   },
   required: ['summary', 'items'],
+};
+
+/** Workers AI 응답 형식이 모델마다 다름: {response} (Llama 등) / OpenAI식 {choices[0].message.content} (gpt-oss·Qwen·Gemma) */
+const outputOf = (r: unknown): unknown => {
+  const o = r as { response?: unknown; choices?: { message?: { content?: unknown } }[] } | null;
+  return o?.response ?? o?.choices?.[0]?.message?.content ?? null;
 };
 
 const parseJson = (v: unknown): Record<string, unknown> | null => {
@@ -110,7 +118,7 @@ export async function translate(req: Request, env: Env, member: string) {
   await bumpUsage(env, member, jstDate(), 'translate', DAILY_LIMIT);
 
   const run = (model: string, input: unknown) =>
-    env.AI.run(model as Parameters<Ai['run']>[0], input as never) as Promise<{ response?: unknown }>;
+    env.AI.run(model as Parameters<Ai['run']>[0], input as never) as Promise<unknown>;
 
   const ocr = await run(VISION_MODEL, {
     messages: [
@@ -126,23 +134,29 @@ export async function translate(req: Request, env: Env, member: string) {
     max_tokens: 1500,
     temperature: 0,
   });
-  const read = parseJson(ocr.response);
+  const read = parseJson(outputOf(ocr));
   const lines = Array.isArray(read?.lines) ? (read!.lines as { ja?: unknown; price_yen?: unknown }[]).filter((l) => typeof l.ja === 'string' && l.ja.trim()) : [];
   const kind = typeof read?.type === 'string' ? read.type : 'other';
   if (lines.length === 0) return json({ type: kind, summary: '', items: [] });
 
-  const tr = await run(TEXT_MODEL, {
-    messages: [
-      { role: 'system', content: TR_PROMPT },
-      { role: 'user', content: JSON.stringify({ type: kind, lines }) },
-    ],
-    response_format: { type: 'json_schema', json_schema: TR_SCHEMA },
-    max_tokens: 2048,
-    temperature: 0.2,
-  });
-  const parsed = normalize(tr.response, kind);
+  const translateLines = async () => {
+    const tr = await run(TEXT_MODEL, {
+      messages: [
+        { role: 'system', content: TR_PROMPT },
+        { role: 'user', content: JSON.stringify({ type: kind, lines }) },
+      ],
+      response_format: { type: 'json_schema', json_schema: TR_SCHEMA },
+      max_tokens: 4096,
+      temperature: 0.2,
+      reasoning: { effort: 'low' }, // gpt-oss: 추론을 짧게 → 15초 안팎
+    });
+    return normalize(outputOf(tr), kind);
+  };
+  // 형식이 깨진 응답이면 한 번 더 시도
+  let parsed = await translateLines().catch(() => null);
+  if (!parsed || parsed.items.length === 0) parsed = await translateLines().catch(() => null);
   if (!parsed || parsed.items.length === 0) {
-    return json({ type: kind, summary: '', items: [], raw: lines.map((l) => `${l.ja}${typeof l.price_yen === 'number' ? `  ¥${l.price_yen}` : ''}`).join('\n') });
+    return json({ type: kind, summary: '', items: [], failed: true, raw: lines.map((l) => `${l.ja}${typeof l.price_yen === 'number' ? `  ¥${l.price_yen}` : ''}`).join('\n') });
   }
   return json(parsed);
 }

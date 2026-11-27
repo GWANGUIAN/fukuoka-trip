@@ -74,7 +74,7 @@ android/           Capacitor 생성 프로젝트(커밋됨)
 - **함께**: 초대 코드 + 멤버 선택 로그인(AuthGate). 앨범(일자→일정별 그리드, 라이트박스 스와이프·원본·내 사진 삭제) / 지갑(표시 통화 ₩/¥, 3인 공통 환율 `settings.rate`, 총비용·인당, 송금 목록 100원 반올림, 분류별, 일자별 목록). 사전 정산분(`settled=1`, category `prepaid` — 항공·호텔)은 총비용에만 포함, 수정·삭제 불가. 장소 상세 "지출 추가" → `/together?tab=wallet&add=<placeId>&day=N`.
 - **지도**: 날짜 필터, 일자 색 번호 핀(AdvancedMarker)·폴리라인, fitBounds, 권역별 목록, 바텀시트. API 키 없으면 목록+외부 링크로 fallback.
 - **체크**: 푸시 알림 켜기 카드(PushCard: 켜기·테스트·끄기, 아이폰 비설치·APK·차단 안내), 예약 오픈 D-day + 🔔 남은 알림 시각, risks, packing 체크(localStorage).
-- **정보**: 메뉴판·간판 번역(사진 → 1280px jpeg → Worker: Llama 4 Scout로 글자 읽기 → Llama 3.3 70B로 한국어 이름·설명, 10–30초, 1인 하루 40회, 최근 5개 기기 저장), 엔→원 계산기(기본 9.3원/엔, 저장됨, 세전 ¥5,000 면세 체크 = 가격/1.1), tips, links, 앱 설치 안내.
+- **정보**: 메뉴판·간판 번역(사진 → 1280px jpeg → Worker: Llama 4 Scout로 글자 읽기 → gpt-oss-120b(reasoning low)로 한국어 이름·설명, 20–40초, 번역 형식 깨지면 1회 재시도 후 원문+"다시 번역", 1인 하루 40회, 최근 5개 기기 저장), 엔→원 계산기(기본 9.3원/엔, 저장됨, 세전 ¥5,000 면세 체크 = 가격/1.1), tips, links, 앱 설치 안내.
 
 ## 플랫폼 동작
 - **PWA 자동 업데이트**: `registerSW` — 새 버전 감지 시 즉시 적용·새로고침, 화면 복귀 시와 30분마다 확인. 배포 후 옛 캐시가 보이는 문제를 막기 위한 것이라 제거하지 말 것.
@@ -96,7 +96,10 @@ android/           Capacitor 생성 프로젝트(커밋됨)
 - 사진·지출 금액은 D1/R2에만 있고 레포에는 없다. 사전 정산분 seed도 `wrangler d1 execute --remote`로 넣었다(레포에 SQL 없음).
 - CORS: `ALLOWED_ORIGINS`(wrangler.toml vars)에 있는 origin만 반사. OPTIONS는 인증 전 204, 모든 에러 응답에도 CORS 헤더. 쿠키 없이 Bearer 토큰. `<img>`는 서명 URL(`/img/:id/:variant?exp&sig`, 하루 단위 만료로 URL 고정 → 캐시).
 - 프론트 API 주소: GitHub repo variable `VITE_API_URL` → deploy.yml. 로컬은 `.env.local`. 로컬 Worker로 테스트하려면 `.env.development.local`에 `VITE_API_URL=http://localhost:8787` + launch.json `api`(wrangler dev, D1·R2 로컬, AI는 원격).
+- Workers AI 응답 형식은 모델마다 다름: Llama류는 `{response}`, gpt-oss·Qwen·Gemma 등은 OpenAI식 `choices[0].message.content` → translate.ts `outputOf`로 둘 다 처리. (Gemma 4·Qwen 3.8은 번역에 50초 넘게 걸리고 결과도 비어서 제외)
+- 개발 서버(5173)에서 옛 화면이 보이면 같은 포트의 `web-prod`가 등록한 서비스워커 때문일 수 있음 → SW 해제 후 새로고침.
 - Workers AI 무료 플랜: Gemma 3·DeepSeek 등 일부 모델은 막혀 있고 Qwen3-30B는 지원 종료. 모델 바꿀 땐 `npx wrangler ai models`로 확인.
+  하루 10,000 뉴런 무료(넘으면 과금 없이 요청 실패). 번역 1회 ≈ 200–300 뉴런 → 3인 합계 하루 40–50회 정도. 출력 토큰 단가가 커서 모델 고를 땐 출력 단가를 본다(gpt-oss-120b 68k/M < Llama 3.3 70B 205k/M 뉴런).
 - **푸시 알림**(예약 오픈·할 일만): 빌드 때 vite 플러그인이 `trip.todos` → `dist/notify.json`. Worker cron(`*/5 * * * *`) → `runCron`(notify.ts)이 그 json을 읽고 `dueNotices`(worker/src/notifyRules.ts — 프론트 체크 탭 🔔 표시도 같은 파일을 import)로 계산 → `push_subs` 전체에 Web Push(webpush.ts: RFC 8291 aes128gcm + VAPID, 의존성 없음) → `push_sent`에 키 기록(중복 방지, 날짜 바뀌면 새 키).
   - 규칙: 시각 있음 = 전날 21:00 + 10분 전 / 날짜만 = 전날 21:00 + 당일 09:00 (KST), 1시간 넘게 늦은 알림은 버림.
   - 서비스워커: `public/push-sw.js`(push·notificationclick)를 workbox `importScripts`로 포함. 개발 서버(`npm run dev`)에선 SW가 없으니 `web-prod`(빌드 후 vite preview) 설정으로 확인.
